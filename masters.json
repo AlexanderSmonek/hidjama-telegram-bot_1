@@ -1,0 +1,34 @@
+{
+  "masters": {
+    "adam": {
+      "name": "Адам",
+      "code": "1846",
+      "contact": "",
+      "gender": "male"
+    },
+    "aslan": {
+      "name": "Аслан",
+      "code": "1144",
+      "contact": "",
+      "gender": "male"
+    },
+    "deni": {
+      "name": "Дени",
+      "code": "0989",
+      "contact": "+79267640131",
+      "gender": "male"
+    },
+    "diana": {
+      "name": "Диана",
+      "code": "8567",
+      "contact": "+79374084740",
+      "gender": "female"
+    },
+    "мухаммад": {
+      "name": "Мухаммад",
+      "code": "1231",
+      "contact": "+79637149002",
+      "gender": "male"
+    }
+  }
+}

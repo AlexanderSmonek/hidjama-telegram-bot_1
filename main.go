@@ -887,6 +887,7 @@ func showMyBookings(msg *tgbotapi.Message) {
 			msg.ReplyMarkup = markup
 		}
 		bot.Send(msg)
+		break
 	}
 }
 
@@ -894,7 +895,13 @@ func cancelUserBooking(cb *tgbotapi.CallbackQuery, data string) {
 	var bookingID int
 	fmt.Sscanf(data, "cancel_booking_%d", &bookingID)
 
-	err := cancelBooking(bookingID)
+	booking, err := getBookingByID(bookingID)
+	if err != nil {
+		bot.Request(tgbotapi.CallbackConfig{CallbackQueryID: cb.ID, Text: "Ошибка при отмене", ShowAlert: true})
+		return
+	}
+
+	err = cancelBooking(bookingID)
 	if err != nil {
 		bot.Request(tgbotapi.CallbackConfig{CallbackQueryID: cb.ID, Text: "Ошибка при отмене", ShowAlert: true})
 		return
@@ -902,5 +909,11 @@ func cancelUserBooking(cb *tgbotapi.CallbackQuery, data string) {
 
 	editMsg := tgbotapi.NewEditMessageText(cb.Message.Chat.ID, cb.Message.MessageID, "✅ Запись отменена")
 	bot.Send(editMsg)
+
+	for _, admin := range cfg.Admins {
+		msg := tgbotapi.NewMessage(admin, fmt.Sprintf("❌ Отмена записи\n\n👨⚕️ %s\n📅 %s\n🕐 %s\n💬 @%s", booking.MasterName, booking.Date, booking.Time, cb.From.UserName))
+		bot.Send(msg)
+	}
+
 	bot.Request(tgbotapi.CallbackConfig{CallbackQueryID: cb.ID, Text: "Запись отменена", ShowAlert: false})
 }

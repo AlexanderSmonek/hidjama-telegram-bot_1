@@ -210,11 +210,10 @@ func getUserBookings(userID int64) ([]Slot, error) {
 }
 
 func cancelBooking(slotID int) error {
+	moscowTime := time.Now().In(tz)
 	update := map[string]interface{}{
-		"status":    "cancelled",
-		"user_id":   nil,
-		"username":  nil,
-		"booked_at": nil,
+		"status":       "cancelled",
+		"cancelled_at": moscowTime.Format("2006-01-02 15:04:05"),
 	}
 	
 	_, _, err := supabaseClient.From("slots").
@@ -223,6 +222,22 @@ func cancelBooking(slotID int) error {
 		Execute()
 	
 	return err
+}
+
+func getBookingByID(slotID int) (*Slot, error) {
+	data, _, err := supabaseClient.From("slots").
+		Select("*", "exact", false).
+		Eq("id", fmt.Sprintf("%d", slotID)).
+		Single().
+		Execute()
+	
+	if err != nil {
+		return nil, err
+	}
+	
+	var result Slot
+	json.Unmarshal(data, &result)
+	return &result, nil
 }
 
 func canCancelBooking(slot Slot) bool {
